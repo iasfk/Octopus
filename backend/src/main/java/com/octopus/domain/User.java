@@ -2,10 +2,7 @@ package com.octopus.domain;
 
 import com.octopus.domain.dto.SignUpDto;
 import com.octopus.domain.type.PlatformType;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -13,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Getter
+@ToString
 @Table(name = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
@@ -28,7 +26,7 @@ public class User {
     @Column(name = "user_nickname", length = 10, nullable = false, unique = true)
     private String userNickname;
 
-    @Column(name = "user_password", length = 20, nullable = false)
+    @Column(name = "user_password", length = 100, nullable = false)
     private String userPassword;
 
     @Column(name = "user_email", length = 30, nullable = false, unique = true)
@@ -40,14 +38,13 @@ public class User {
     @Column(name = "user_avatar", nullable = false)
     private String userAvatar;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "platform_type")
     private PlatformType platformType;
 
     @Column(name = "platform_access_token")
     private Long platformAccessToken;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "octopus_table",
             joinColumns = @JoinColumn(name = "user_no"),
@@ -57,6 +54,29 @@ public class User {
 
     @Builder(builderMethodName = "signUpBuilder")
     public User(SignUpDto signUpDto) {
+        this.userId = signUpDto.getUserId();
+        this.userPassword = signUpDto.getUserPassword();
+        this.userNickname = signUpDto.getUserNickname();
+        this.userEmail = signUpDto.getUserEmail();
+        this.userAvatar = signUpDto.getUserAvatar();
+        this.userPoint = signUpDto.getUserPoint();
+        this.platformType = signUpDto.getPlatformType();
+    }
 
+    public void updateAvatar(String avatar){
+        this.userAvatar = avatar;
+    }
+ /*   public void update(UpdateDto updateDto){
+       // this.userPassword = updateDto.getUserPassword();
+        this.userNickname = updateDto.getUserNickname();;
+        this.userAvatar = updateDto.getUserAvatar();
+    }*/
+
+    public void updatePassword(final String newPassword){
+        this.userPassword = newPassword;
+    }
+
+    public void changeNickname(String newNickname) {
+        this.userNickname = newNickname;
     }
 }
